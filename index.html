@@ -244,6 +244,17 @@
       @media (prefers-reduced-motion: reduce) {
         .js [data-reveal] { opacity: 1; transform: none; transition: none; }
       }
+      /* Before/after week bars: flat fills, transform-only motion. */
+      .ba { margin-top: 24px; }
+      .ba-row { margin-top: 20px; }
+      .ba-row:first-child { margin-top: 0; }
+      .ba-label { font-size: 16px; margin: 0 0 8px; }
+      .ba-track { position: relative; height: 28px; background: #1b3560; border-radius: 4px; overflow: hidden; }
+      .ba-fill { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; transform-origin: left center; transition: transform 0.5s ease; }
+      .ba-fill-before { background: #5b8cff; }
+      .ba-fill-remain { background: #5b8cff; }
+      .ba-fill-freed { background: #ff8a1e; }
+      @media (prefers-reduced-motion: reduce) { .ba-fill { transition: none; } }
     </style>
   </head>
   <body>
@@ -253,7 +264,7 @@
         <a href="#what">What it does</a>
         <a href="#demo">See it work</a>
         <a href="#how">How it works</a>
-        <a href="#savings">Savings</a>
+        <a href="#savings">Before &amp; after</a>
         <a href="#contact">Contact</a>
       </div>
       <a class="btn" href="tel:+14232925839">Book a free consult</a>
@@ -346,7 +357,7 @@
     </section>
 
     <section id="savings" class="frame section-gap" aria-labelledby="savings-h">
-      <h2 class="sec-title" id="savings-h" data-reveal>Savings</h2>
+      <h2 class="sec-title" id="savings-h" data-reveal>Before and after</h2>
       <div data-reveal><div class="calc-card">
           <label>Hours per week lost to admin <span id="calc-hours-val">10</span></label>
           <input type="range" id="calc-hours" min="0" max="40" value="10" aria-label="Hours per week lost to admin" />
@@ -354,6 +365,19 @@
           <input type="range" id="calc-rate" min="15" max="150" step="5" value="35" aria-label="Value of an hour in dollars" />
           <label>Share an agent could take off your plate <span id="calc-share-val">70%</span></label>
           <input type="range" id="calc-share" min="0" max="100" step="5" value="70" aria-label="Share an agent could take off your plate" />
+          <div class="ba" aria-live="polite">
+            <div class="ba-row">
+              <p class="ba-label">Before — your week now: <span id="ba-before-label">10 hrs of busywork every week</span></p>
+              <div class="ba-track"><div class="ba-fill ba-fill-before" id="ba-before-fill" style="transform: scaleX(0.25);"></div></div>
+            </div>
+            <div class="ba-row">
+              <p class="ba-label">After — with an agent: <span id="ba-after-label">3 hrs left, 7 hrs back every week</span></p>
+              <div class="ba-track">
+                <div class="ba-fill ba-fill-remain" id="ba-after-remain" style="transform: scaleX(0.075);"></div>
+                <div class="ba-fill ba-fill-freed" id="ba-after-freed" style="left: 7.5%; transform: scaleX(0.175);"></div>
+              </div>
+            </div>
+          </div>
           <div class="calc-result">
             <div><span class="calc-num" id="calc-monthly">$1,516</span><span class="calc-label">admin cost per month</span></div>
             <div><span class="calc-num" id="calc-save">$1,061</span><span class="calc-label">potential saving per month</span></div>
@@ -555,6 +579,12 @@
         var outCost = document.getElementById("calc-monthly");
         var outSave = document.getElementById("calc-save");
         var outHrs = document.getElementById("calc-hours-back");
+        var beforeFill = document.getElementById("ba-before-fill");
+        var remainFill = document.getElementById("ba-after-remain");
+        var freedFill = document.getElementById("ba-after-freed");
+        var beforeLabel = document.getElementById("ba-before-label");
+        var afterLabel = document.getElementById("ba-after-label");
+        function hr(n) { n = Math.round(n); return n + (n === 1 ? " hr" : " hrs"); }
         var hv = document.getElementById("calc-hours-val");
         var rv = document.getElementById("calc-rate-val");
         var sv = document.getElementById("calc-share-val");
@@ -572,6 +602,13 @@
           outCost.textContent = fmt(cost);
           outSave.textContent = fmt(save);
           outHrs.textContent = Math.round(hrsBack) + " hrs";
+          var remain = hours * (100 - share) / 100;
+          var freed = hours * share / 100;
+          if (beforeFill) beforeFill.style.transform = "scaleX(" + (hours / 40) + ")";
+          if (remainFill) remainFill.style.transform = "scaleX(" + (remain / 40) + ")";
+          if (freedFill) { freedFill.style.left = (remain / 40 * 100) + "%"; freedFill.style.transform = "scaleX(" + (freed / 40) + ")"; }
+          if (beforeLabel) beforeLabel.textContent = hr(hours) + " of busywork every week";
+          if (afterLabel) afterLabel.textContent = hr(remain) + " left, " + hr(freed) + " back every week";
         }
         [h, r, s].forEach(function (el) { el.addEventListener("input", update); });
         update();
