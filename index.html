@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/farvist@1/dist/farvist.min.css" />
     <style>
       :root {
         --bg: #060e24;
@@ -458,7 +459,6 @@
         background: linear-gradient(90deg, var(--cta), var(--accent)); margin-top: 12px;
       }
       .demo-card, .calc-card, .contact {
-        background: linear-gradient(180deg, #13264f, #0d1c40);
         border-color: #2c4a8f;
         box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(91, 140, 255, 0.12);
       }
@@ -475,6 +475,35 @@
       .contact-line:hover { transform: translateY(-1px); border-color: var(--accent); }
       .chips span { transition: border-color 0.15s ease; }
       .chips span:hover { border-color: var(--accent); }
+      /* ---------- new look: Farvist brand tokens ---------- */
+      :root {
+        --fv-body-bg: #060e24; --fv-body-color: #f2f5ff;
+        --fv-primary: #5b8cff; --fv-info: #37e0ff; --fv-accent: #ff8a1e;
+        --fv-glass-bg: rgba(19, 35, 81, 0.55); --fv-glass-border: rgba(91, 140, 255, 0.28);
+        --fv-glass-blur: 14px; --fv-glass-saturate: 140%;
+      }
+      /* ---------- new look: bento tasks ---------- */
+      .tasks { border-top: none; gap: 14px; }
+      .tasks li {
+        background: linear-gradient(180deg, rgba(19, 38, 79, 0.85), rgba(13, 28, 64, 0.85));
+        border: 1px solid #2c4a8f; border-bottom: 1px solid #2c4a8f;
+        border-radius: 16px; padding: 20px;
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      }
+      @media (min-width: 900px) {
+        .tasks { grid-template-columns: repeat(3, 1fr); }
+        .tasks li:nth-child(1), .tasks li:nth-child(4), .tasks li:nth-child(6) { grid-column: span 2; }
+      }
+      /* ---------- new look: stats band ---------- */
+      .stats-band { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 30px; }
+      @media (min-width: 620px) { .stats-band { grid-template-columns: repeat(3, 1fr); } }
+      .stats-band > div {
+        background: rgba(19, 35, 81, 0.55); border: 1px solid #2c4a8f;
+        border-radius: 16px; padding: 18px; text-align: center;
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      }
+      .stats-num { display: block; font-size: 36px; font-weight: 900; color: var(--cta); line-height: 1.1; }
+      .stats-label { display: block; font-size: 13.5px; color: var(--muted); margin-top: 2px; }
     </style>
   </head>
   <body>
@@ -487,7 +516,7 @@
 
     <div class="wrap">
 
-      <header class="hero">
+      <header class="hero bg-mesh-aurora">
         <h1>Your whole company, running more efficiently. <em>One agent that does it all.</em></h1>
         <p class="lede">
           White Technologies puts an <strong>AI agent</strong> to work across your entire business — not just the phones.
@@ -500,6 +529,12 @@
           <a class="btn btn-ghost" href="mailto:Whitetechnologies96@gmail.com">Email us</a>
         </div>
       </header>
+
+      <div class="stats-band">
+        <div><span class="stats-num">6</span><span class="stats-label">areas an agent covers</span></div>
+        <div><span class="stats-num">1</span><span class="stats-label">flat monthly service</span></div>
+        <div><span class="stats-num">0</span><span class="stats-label">new software to learn</span></div>
+      </div>
 
       <nav class="page-tabs" role="tablist" aria-label="Site sections">
         <button class="page-tab" type="button" role="tab" aria-selected="true" data-page-panel="panel-about">About</button>
@@ -515,7 +550,7 @@
           and only pulls you in when a real person is needed.
         </p>
 
-        <div class="demo-card">
+        <div class="demo-card glass">
           <div class="demo-tabs" role="tablist" aria-label="Example agent conversations">
             <button class="demo-tab" role="tab" id="tab-call" aria-selected="true" aria-controls="panel-call" data-panel="panel-call">The morning brief</button>
             <button class="demo-tab" role="tab" id="tab-quote" aria-selected="false" aria-controls="panel-quote" data-panel="panel-quote">The paperwork pile</button>
@@ -636,7 +671,7 @@
       <section aria-labelledby="calc-h">
         <h2 id="calc-h">What is admin time costing you?</h2>
         <p class="section-intro">Drag the sliders — your numbers, your business. This is an estimate, not a quote.</p>
-        <div class="calc-card">
+        <div class="calc-card glass">
           <label>Hours per week lost to admin <span id="calc-hours-val">10</span></label>
           <input type="range" id="calc-hours" min="0" max="40" value="10" aria-label="Hours per week lost to admin" />
           <label>Value of an hour <span id="calc-rate-val">$35</span></label>
@@ -655,7 +690,7 @@
       </section>
       </div>
       <div id="panel-contact" role="tabpanel" hidden>
-      <div class="contact" id="contact">
+      <div class="contact glass" id="contact">
         <h2>Talk it over</h2>
         <p>No pitch deck, no pressure — just a short conversation about where your business loses time, and what an agent could take off your plate.</p>
         <div class="qr-card">
@@ -786,8 +821,11 @@
       (function () {
         if (!window.gsap || !window.ScrollTrigger || reducedMotion) return;
         gsap.registerPlugin(ScrollTrigger);
-        gsap.from(".hero h1, .hero .lede, .hero-rotator, .hero .cta-row", {
-          y: 24, opacity: 0, duration: 0.8, stagger: 0.12, ease: "power3.out"
+        gsap.from(".hero h1", {
+          clipPath: "inset(0 100% 0 0)", duration: 1.1, ease: "power4.inOut"
+        });
+        gsap.from(".hero .lede, .hero-rotator, .hero .cta-row", {
+          y: 24, opacity: 0, duration: 0.8, stagger: 0.12, delay: 0.45, ease: "power3.out"
         });
         gsap.utils.toArray("section").forEach(function (sec) {
           gsap.from(sec, {
